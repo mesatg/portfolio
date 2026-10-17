@@ -56,7 +56,10 @@ a{color:inherit}
 .lang button.on{background:var(--sun);color:var(--ink)}
 .snd{font-family:"Press Start 2P";font-size:9px;border:0;padding:6px 8px;background:var(--mint);color:var(--ink);cursor:pointer;box-shadow:0 0 0 2px #fff;white-space:nowrap}
 .snd.muted{background:transparent;color:#fff;opacity:.7}
-@media (max-width:1060px){.hud nav{display:none}}
+.hud.tight{gap:8px}
+.hud.tight nav a{font-size:8px;padding:6px 4px}
+.hud.compact nav{display:none}
+.hud .right{flex-shrink:0}
 @media (max-width:420px){.prog{width:60px}.hud .hearts{display:none}}
 
 /* HERO */
@@ -654,6 +657,7 @@ function render(l){
   document.querySelectorAll('.reveal:not(.in)').forEach(el=>io.observe(el));
   lines=L.lines;li=0;ci=0;del=false;$('typed').textContent='';
   try{localStorage.setItem('lang',l);}catch(e){}
+  if(window.fitHud)fitHud();
 }
 document.querySelectorAll('.lang button').forEach(b=>b.addEventListener('click',()=>render(b.dataset.l)));
 $('filters').addEventListener('click',e=>{
@@ -664,6 +668,11 @@ $('filters').addEventListener('click',e=>{
 });
 
 let saved='en';try{saved=localStorage.getItem('lang')||'en';}catch(e){}
+// Show the top-bar menu only when everything fits on one line; otherwise hide the links so coins & language stay visible
+window.fitHud=()=>{const hud=document.querySelector('.hud'),over=()=>hud.scrollWidth>hud.clientWidth+1;
+  hud.classList.remove('tight','compact');if(over())hud.classList.add('tight');if(over())hud.classList.add('compact');};
+addEventListener('resize',fitHud);
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(fitHud);
 render(saved==='tr'?'tr':'en');
 
 (function type(){
